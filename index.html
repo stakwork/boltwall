@@ -75,41 +75,46 @@
 				<pre><code class="language-js">app.use(boltwall())</code></pre>
 				<ul>
 					<li><a href="#%e2%9a%a1%ef%b8%8f-boltwall-%e2%9a%a1%ef%b8%8f">⚡️ Boltwall ⚡️</a><ul>
-							<li><a href="#supported-features">Supported Features</a><ul>
-									<li><a href="#system-requirements">System Requirements</a></li>
-									<li><a href="#usage">Usage</a></li>
-									<li><a href="#test-the-api">Test the API</a></li>
-									<li><a href="#required-environment-variables">Required Environment Variables</a></li>
+							<li><a href="#supported-features">Supported Features</a></li>
+							<li><a href="#system-requirements">System Requirements</a></li>
+							<li><a href="#usage">Usage</a></li>
+							<li><a href="#test-the-api">Test the API</a></li>
+							<li><a href="#required-environment-variables">Required Environment Variables</a><ul>
+									<li><a href="#lightning-configs">Lightning Configs</a></li>
 								</ul>
 							</li>
-							<li><a href="#lightning-configs">Lightning Configs</a><ul>
-									<li><a href="#what-is-an-lsat">What is an LSAT</a></li>
+							<li><a href="#what-is-an-lsat">What is an LSAT</a><ul>
+									<li><a href="#authentication-flow">Authentication Flow</a></li>
+									<li><a href="#custom-authorization-w-macaroons">Custom Authorization w/ Macaroons</a></li>
+									<li><a href="#pre-built-configs">Pre-built Configs</a><ul>
+											<li><a href="#time_caveat_configs"><strong><code>TIME_CAVEAT_CONFIGS</code></strong></a></li>
+											<li><a href="#origin_caveat_configs"><strong><code>ORIGIN_CAVEAT_CONFIGS</code></strong></a></li>
+											<li><a href="#route_caveat_configs"><strong><code>ROUTE_CAVEAT_CONFIGS</code></strong></a></li>
+										</ul>
+									</li>
 								</ul>
 							</li>
-							<li><a href="#authentication-flow">Authentication Flow</a></li>
-							<li><a href="#custom-authorization-w-macaroons">Custom Authorization w/ Macaroons</a></li>
-							<li><a href="#pre-built-configs">Pre-built Configs</a><ul>
-									<li><a href="#time_caveat_configs"><strong><code>TIME_CAVEAT_CONFIGS</code></strong></a></li>
-									<li><a href="#origin_caveat_configs"><strong><code>ORIGIN_CAVEAT_CONFIGS</code></strong></a></li>
-									<li><a href="#hodl-invoices">HODL Invoices</a></li>
+							<li><a href="#hodl-invoices">HODL Invoices</a><ul>
+									<li><a href="#example-implementation-and-access-flow">Example Implementation and Access Flow</a></li>
+									<li><a href="#generation">Generation</a></li>
+									<li><a href="#authorization-flows">Authorization Flows</a></li>
+									<li><a href="#making-the-payment">Making the Payment</a></li>
+									<li><a href="#a-held-invoice-is-a-paid-invoice">A <code>held</code> Invoice is a Paid Invoice</a></li>
 								</ul>
 							</li>
-							<li><a href="#example-implementation-and-access-flow">Example Implementation and Access Flow</a></li>
-							<li><a href="#generation">Generation</a></li>
-							<li><a href="#authorization-flows">Authorization Flows</a></li>
-							<li><a href="#making-the-payment">Making the Payment</a></li>
-							<li><a href="#a-held-invoice-is-a-paid-invoice">A <code>held</code> Invoice is a Paid Invoice</a><ul>
-									<li><a href="#3rd-party-authentication">3rd Party Authentication</a></li>
+							<li><a href="#3rd-party-authentication">3rd Party Authentication</a><ul>
+									<li><a href="#usage-1">Usage</a><ul>
+											<li><a href="#authentication-flow-1">Authentication flow</a></li>
+										</ul>
+									</li>
 								</ul>
 							</li>
-							<li><a href="#usage-1">Usage</a><ul>
-									<li><a href="#authentication-flow-1">Authentication flow</a></li>
-									<li><a href="#documentation">Documentation</a></li>
+							<li><a href="#documentation">Documentation</a><ul>
+									<li><a href="#custom-configs--caveats">Custom Configs &amp; Caveats</a></li>
+									<li><a href="#rest-api">REST API</a></li>
+									<li><a href="#full-api-documentation">Full API Documentation</a></li>
 								</ul>
 							</li>
-							<li><a href="#custom-configs--caveats">Custom Configs &amp; Caveats</a></li>
-							<li><a href="#rest-api">REST API</a></li>
-							<li><a href="#full-api-documentation">Full API Documentation</a></li>
 						</ul>
 					</li>
 				</ul>
@@ -217,7 +222,7 @@ $ yarn start</code></pre>
 				<a href="#lightning-configs" id="lightning-configs" style="color: inherit; text-decoration: none;">
 					<h3>Lightning Configs</h3>
 				</a>
-				<p><strong>Lightning configs (either lnd connection info <em>or</em> OpenNode API key depending on connection type)
+				<p><strong>Lightning configs (either lnd connection info, core lightning(cln) <em>or</em> OpenNode API key depending on connection type)
 				are required environment variables</strong></p>
 				<p>If you are connecting to a lightning node you will need the following in your project&#39;s <code>.env</code> file
 				or on the <code>process.env</code> object</p>
@@ -230,6 +235,17 @@ $ yarn start</code></pre>
 					<a href="https://dev.opennode.co">create an OpenNode account</a> (currently testnet only),
 				generate an API key and save it as:</p>
 				<pre><code><span class="hljs-attr">OPEN_NODE_KEY</span>=[API KEY HERE]</code></pre><p>If you have both the lnd configs and OpenNode, <em>lnd will take precedence</em>.</p>
+				<p>Alternatively, if you are using Core Lightning for managing payments,
+				You will have to provide the details below for your node</p>
+				<pre><code><span class="hljs-attr">CLN_TLS_LOCATION</span>=[<span class="hljs-string">"/path/to/ca.pem"</span>]
+<span class="hljs-attr">CLN_TLS_KEY_LOCATION</span>=[<span class="hljs-string">"/path/to/client-key.pem"</span>]
+<span class="hljs-attr">CLN_TLS_CHAIN_LOCATION</span>=[<span class="hljs-string">"/path/to/client.pem"</span>]
+<span class="hljs-attr">CLN_URI</span>=[address of node here, e.g.localhost:<span class="hljs-number">10020</span>]</code></pre>
+				<a href="#note" id="note" style="color: inherit; text-decoration: none;">
+					<h4>Note</h4>
+				</a>
+				<p>The CLN currently only supports the paywall feature.</p>
+				<p>Also, you will need to have a folder named <code>proto</code> at the root of your project, with two files name <code>cln.proto</code> and <code>primitives.proto</code> respectively. You can get the content of <code>cln.proto</code> <a href="https://github.com/ElementsProject/lightning/blob/master/cln-grpc/proto/node.proto">from here</a> and the content of <code>primitives.proto</code> <a href="https://github.com/ElementsProject/lightning/blob/master/cln-grpc/proto/primitives.proto">from here</a>.</p>
 				<p>A <code>SESSION_SECRET</code> can also be set but will be generated with a secure number of random bytes if
 				none is provided.</p>
 				<pre><code><span class="hljs-symbol">SESSION_SECRET</span>=[RANDOM <span class="hljs-keyword">STRING </span>MINIMUM <span class="hljs-number">32</span> <span class="hljs-keyword">BYTES </span>IN LENGTH]</code></pre><p>If you don&#39;t set this yourself, then the secret is not persisted between server restarts. This means
@@ -314,6 +330,18 @@ app.use(boltwall(TIME_CAVEAT_CONFIGS))
 				</a>
 				<p>This creates a restriction that any authorization is only valid from the IP that originally
 				made the request for access.</p>
+				<a href="#strongcoderoute_caveat_configscodestrong" id="strongcoderoute_caveat_configscodestrong" style="color: inherit; text-decoration: none;">
+					<h4><strong><code>ROUTE_CAVEAT_CONFIGS</code></strong></h4>
+				</a>
+				<p>This creates a restriction that any authorization is only valid for the route that originally
+				was requested to access. There is an option to add a master route to your config to create an LSAT that works to access all routes. Another option is to allow sub-routes, meaning an LSAT to access &quot;/protected&quot; will also grant access to &quot;/protected/images&quot;</p>
+				<pre><code class="language-javascript">app.use(
+  boltwall({
+    ...ROUTE_CAVEAT_CONFIGS,
+    <span class="hljs-attr">masterRoute</span>: <span class="hljs-string">'/master'</span>,
+    <span class="hljs-attr">allowSubroutes</span>: <span class="hljs-literal">true</span>,
+  })
+)</code></pre>
 				<a href="#hodl-invoices" id="hodl-invoices" style="color: inherit; text-decoration: none;">
 					<h2>HODL Invoices</h2>
 				</a>
@@ -343,9 +371,9 @@ app.use(boltwall(TIME_CAVEAT_CONFIGS))
     <span class="hljs-comment">// otherwise the hodl invoice can't be redeemed</span>
     <span class="hljs-keyword">const</span> secret = crypto.randomBytes(<span class="hljs-number">32</span>)
     <span class="hljs-keyword">const</span> paymentHash = crypto
-        .createHash(<span class="hljs-string">'sha256'</span>)
-        .update(secret)
-        .digest()
+      .createHash(<span class="hljs-string">'sha256'</span>)
+      .update(secret)
+      .digest()
     req.body.paymentHash = paymentHash
   }
   next()
@@ -485,10 +513,16 @@ app.use(boltwall({ <span class="hljs-attr">oauth</span>: <span class="hljs-liter
 						<span>Internals</span>
 					</li>
 					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_configs_cln_.html">&quot;src/configs/cln&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
 						<a href="modules/_src_configs_index_.html">&quot;src/configs/index&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_src_configs_origin_.html">&quot;src/configs/origin&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_configs_route_.html">&quot;src/configs/route&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_src_configs_time_.html">&quot;src/configs/time&quot;</a>
@@ -528,6 +562,9 @@ app.use(boltwall({ <span class="hljs-attr">oauth</span>: <span class="hljs-liter
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_src_satisfiers_origin_.html">&quot;src/satisfiers/origin&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_src_satisfiers_route_.html">&quot;src/satisfiers/route&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_src_server_.html">&quot;src/server&quot;</a>
@@ -770,9 +807,6 @@ app.use(boltwall({ <span class="hljs-attr">oauth</span>: <span class="hljs-liter
 						<a href="modules/_node_modules__types_request_index_d_.html">&quot;node_<wbr>modules/@types/request/index.d&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="modules/_node_modules__types_request_node_modules_form_data_index_d_.html">&quot;node_<wbr>modules/@types/request/node_<wbr>modules/form-<wbr>data/index.d&quot;</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="modules/_node_modules__types_semver_classes_comparator_d_.html">&quot;node_<wbr>modules/@types/semver/classes/comparator.d&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
@@ -917,10 +951,16 @@ app.use(boltwall({ <span class="hljs-attr">oauth</span>: <span class="hljs-liter
 						<a href="modules/_node_modules__types_uuid_interfaces_d_.html">&quot;node_<wbr>modules/@types/uuid/interfaces.d&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/_node_modules_array_flatten_array_flatten_d_.html">&quot;node_<wbr>modules/array-<wbr>flatten/array-<wbr>flatten.d&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="modules/_node_modules_compose_middleware_lib_index_d_.html">&quot;node_<wbr>modules/compose-<wbr>middleware/lib/index.d&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="modules/_node_modules_compose_middleware_node_modules_array_flatten_array_flatten_d_.html">&quot;node_<wbr>modules/compose-<wbr>middleware/node_<wbr>modules/array-<wbr>flatten/array-<wbr>flatten.d&quot;</a>
+						<a href="modules/_node_modules_form_data_index_d_.html">&quot;node_<wbr>modules/form-<wbr>data/index.d&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/_node_modules_grpc_index_d_.html">&quot;node_<wbr>modules/grpc/index.d&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="modules/_node_modules_lsat_js_dist_caveat_d_.html">&quot;node_<wbr>modules/lsat-<wbr>js/dist/caveat.d&quot;</a>
