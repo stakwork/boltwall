@@ -45,7 +45,7 @@ async function getInvoice(
     // in an earlier middleware and we can include the secret (which will only
     // be shown if it has been paid as well)
     const includeSecret = lsat ? true : false
-    invoice = await checkInvoiceStatus(id, req.lnd, req.opennode, includeSecret)
+    invoice = await checkInvoiceStatus(id, req.lnd, req.opennode, req.cln, req.sphinxy, includeSecret)
   } catch (e) {
     // handle ln-service errors
     if (Array.isArray(e)) {

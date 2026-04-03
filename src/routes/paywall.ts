@@ -86,7 +86,9 @@ export default async function paywall(
     const invoice = await checkInvoiceStatus(
       lsat.paymentHash,
       req.lnd,
-      req.opennode
+      req.opennode,
+      req.cln,
+      req.sphinxy
     )
     payreq = invoice.payreq
     status = invoice.status

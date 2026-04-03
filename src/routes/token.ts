@@ -59,7 +59,9 @@ export async function satisfyTokenChallenge(
   const invoiceResponse = await checkInvoiceStatus(
     lsat.paymentHash,
     req.lnd,
-    req.opennode
+    req.opennode,
+    req.cln,
+    req.sphinxy
   )
 
   if (invoiceResponse.status === 'unpaid') {

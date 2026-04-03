@@ -38,4 +38,8 @@ export interface BoltwallConfig {
   rate?: number
   masterRoute?: string
   allowSubroutes?: boolean
+  sphinxy?: {
+    url: string
+    token?: string
+  }
 }
