@@ -1,15 +1,13 @@
 {
-  "name": "boltwall",
-  "version": "6.0.4",
+  "name": "sphinx-boltwall",
+  "version": "7.1.0",
   "description": "A Nodejs + Express middleware for adding a lightning-based paywall to API routes w/ macaroons for flexible delegation.",
   "main": "dist/index.js",
   "repository": "git@github.com:Tierion/boltwall.git",
   "author": "Buck Perley <bucko.perley@gmail.com>",
   "license": "AGPL-3.0",
   "types": "./dist/index.d.ts",
-  "bin": {
-    "boltwall": "./bin/boltwall"
-  },
+
   "scripts": {
     "start": "nodemon",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
@@ -19,9 +17,9 @@
     "lint": "tsc --noEmit --project tsconfig.json && eslint --ext .ts src --quiet",
     "test": "LOG_LEVEL=none nyc ts-mocha -p tsconfig.json tests/**/*.spec.ts",
     "test:watch": "LOG_LEVEL=none ts-mocha -p tsconfig.json --reporter spec --watch --watch-extensions ts tests/**/*.spec.ts",
-    "prepare": "npm run clean",
+
     "docs": "./docs.sh",
-    "prepublishOnly": "npm run docs && npm run build && npm run build:bin",
+    "prepublishOnly": "npm run build",
     "postversion": "git push && git push --tags"
   },
   "dependencies": {
