@@ -87,7 +87,8 @@ export default async function paywall(
       lsat.paymentHash,
       req.lnd,
       req.opennode,
-      req.cln
+      req.cln,
+      req.sphinxy
     )
     payreq = invoice.payreq
     status = invoice.status

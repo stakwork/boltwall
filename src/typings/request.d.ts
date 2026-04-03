@@ -12,5 +12,6 @@ declare namespace Express {
     opennode?: any
     hostname: string
     cln?: any
+    sphinxy?: { url: string; token?: string }
   }
 }

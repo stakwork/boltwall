@@ -26,7 +26,10 @@ export default async function parseEnv(
     //   CLN_URI,
     // } = process.env
 
-    testEnvVars(req.logger)
+    const sphinxyConfig = req.boltwallConfig?.sphinxy
+    if (!sphinxyConfig) {
+      testEnvVars(req.logger)
+    }
     const {
       OPEN_NODE_KEY,
       LND_TLS_CERT,
@@ -48,8 +51,12 @@ export default async function parseEnv(
     if (lndCert && !isBase64(lndCert) && !isHex(lndCert)) {
       lndCert = Buffer.from(fs.readFileSync(lndCert)).toString('base64')
     }
-    //Try loading CLN first
-    if (CLN) {
+    // Try loading sphinxy first (from config, not env)
+    if (sphinxyConfig) {
+      req.sphinxy = sphinxyConfig
+    }
+    //Try loading CLN
+    else if (CLN) {
       const cln = await loadCln(
         CLN_TLS_LOCATION as string,
         CLN_TLS_KEY_LOCATION as string,

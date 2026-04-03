@@ -262,7 +262,7 @@ export function createLsatFromInvoice(
  * @returns {InvoiceResponse} invoice - returns an invoice with a payreq, id, description, createdAt, and
  */
 export async function createInvoice(req: Request): Promise<InvoiceResponse> {
-  const { lnd, opennode, body, boltwallConfig, query, cln } = req
+  const { lnd, opennode, body, boltwallConfig, query, cln, sphinxy } = req
   const { expiresAt, amount } = body // time in seconds
   const { CLN } = getEnvVars()
 
@@ -374,6 +374,27 @@ This means payer can pay whatever they want for access.'
       amount: tokens,
       createdAt: '',
     }
+  } else if (sphinxy) {
+    const amtMsat = (+tokens) * 1000
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    }
+    if (sphinxy.token) {
+      headers['x-admin-token'] = sphinxy.token
+    }
+    const res = await rp.post({
+      uri: `${sphinxy.url}/invoice`,
+      body: { amt_msat: amtMsat },
+      headers,
+      json: true,
+    })
+    invoice = {
+      payreq: res.bolt11,
+      id: res.payment_hash,
+      description: _description,
+      amount: tokens,
+      createdAt: '',
+    }
   } else {
     throw new Error(
       'No lightning node information configured on request object'
@@ -399,6 +420,7 @@ export async function checkInvoiceStatus(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   opennode?: any,
   cln?: any,
+  sphinxy?: { url: string; token?: string },
   returnSecret = false
 ): Promise<InvoiceResponse> {
   if (!invoiceId) throw new Error('Missing invoice id.')
@@ -435,6 +457,26 @@ export async function checkInvoiceStatus(
     createdAt = ''
     secret = clnData.secret
     description = clnData.description
+  } else if (sphinxy) {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    }
+    if (sphinxy.token) {
+      headers['x-admin-token'] = sphinxy.token
+    }
+    const data = await rp.post({
+      uri: `${sphinxy.url}/check_invoice`,
+      body: { payment_hash: invoiceId },
+      headers,
+      json: true,
+    })
+    const amtMsat = data.amt_msat || '0'
+    amount = Math.floor(parseInt(amtMsat) / 1000)
+    status = data.status === 'paid' ? 'paid' : 'unpaid'
+    payreq = ''
+    createdAt = ''
+    secret = ''
+    description = ''
   } else {
     throw new Error(
       'No lightning node information configured on request object'
