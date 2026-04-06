@@ -4,12 +4,14 @@
     "module": "commonjs",
     "lib": ["es2017"],
     "strict": true,
+    "useUnknownInCatchVariables": false,
     "baseUrl": ".",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "noUnusedParameters": true,
     "noUnusedLocals": true,
-    "allowJs": true
+    "allowJs": true,
+    "skipLibCheck": true
   }
 }

@@ -1,13 +1,12 @@
 {
   "name": "sphinx-boltwall",
-  "version": "7.1.0",
+  "version": "7.2.0",
   "description": "A Nodejs + Express middleware for adding a lightning-based paywall to API routes w/ macaroons for flexible delegation.",
   "main": "dist/index.js",
   "repository": "git@github.com:Tierion/boltwall.git",
   "author": "Buck Perley <bucko.perley@gmail.com>",
   "license": "AGPL-3.0",
   "types": "./dist/index.d.ts",
-
   "scripts": {
     "start": "nodemon",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
@@ -17,20 +16,20 @@
     "lint": "tsc --noEmit --project tsconfig.json && eslint --ext .ts src --quiet",
     "test": "LOG_LEVEL=none nyc ts-mocha -p tsconfig.json tests/**/*.spec.ts",
     "test:watch": "LOG_LEVEL=none ts-mocha -p tsconfig.json --reporter spec --watch --watch-extensions ts tests/**/*.spec.ts",
-
     "docs": "./docs.sh",
     "prepublishOnly": "npm run build",
     "postversion": "git push && git push --tags"
   },
   "dependencies": {
+    "@grpc/grpc-js": "^1.12.5",
+    "@grpc/proto-loader": "^0.7.13",
     "@zeit/ncc": "^0.21.0",
     "binet": "^0.3.5",
     "blgr": "^0.1.7",
     "compose-middleware": "5.0.1",
     "dotenv": "8.0.0",
     "express": "4.17.1",
-    "grpc": "^1.24.11",
-    "ln-service": "https://github.com/bucko13/ln-service#path",
+    "ln-service": "^57.23.0",
     "lsat-js": "^2.0.3",
     "macaroon": "github:tierion/js-macaroon#ts",
     "opennode": "1.2.1",
@@ -69,7 +68,7 @@
     "ts-mocha": "^6.0.0",
     "tslint": "^5.20.1",
     "typedoc": "^0.15.3",
-    "typescript": "^3.7.2",
+    "typescript": "~4.7.0",
     "yarn-audit-fix": "^4.3.3"
   },
   "peerDependencies": {

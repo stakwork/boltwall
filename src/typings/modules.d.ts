@@ -1,4 +1,5 @@
 declare module 'ln-service'
+declare module 'macaroon'
 declare module 'opennode'
 declare module 'blgr'
 declare module 'binet'

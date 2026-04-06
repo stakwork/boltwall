@@ -1,37 +1,45 @@
 import * as fs from 'fs'
-import * as grpc from 'grpc'
+import * as grpc from '@grpc/grpc-js'
+import { loadSync } from '@grpc/proto-loader'
 
 const loadMTLSCredentials = (
-  tls_location: string,
-  tls_key_location: string,
-  tls_chain_location: string
-) => {
-  const glCert = fs.readFileSync(tls_location)
-  const glPriv = fs.readFileSync(tls_key_location)
-  const glChain = fs.readFileSync(tls_chain_location)
+  tlsLocation: string,
+  tlsKeyLocation: string,
+  tlsChainLocation: string
+): grpc.ChannelCredentials => {
+  const glCert = fs.readFileSync(tlsLocation)
+  const glPriv = fs.readFileSync(tlsKeyLocation)
+  const glChain = fs.readFileSync(tlsChainLocation)
   return grpc.credentials.createSsl(glCert, glPriv, glChain)
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default async function loadCln(
-  tls_location: string,
-  tls_key_location: string,
-  tls_chain_location: string,
-  cln_uri: string
-) {
-  const credentials = await loadMTLSCredentials(
-    tls_location,
-    tls_key_location,
-    tls_chain_location
+  tlsLocation: string,
+  tlsKeyLocation: string,
+  tlsChainLocation: string,
+  clnUri: string
+): Promise<any> {
+  const credentials = loadMTLSCredentials(
+    tlsLocation,
+    tlsKeyLocation,
+    tlsChainLocation
   )
 
-  const descriptor = await grpc.load('proto/cln.proto')
-  const cln = descriptor.cln
+  const packageDefinition = loadSync('proto/cln.proto', {
+    keepCase: true,
+    longs: String,
+    enums: String,
+    defaults: true,
+    oneofs: true,
+  })
+  const descriptor = grpc.loadPackageDefinition(packageDefinition)
+  const cln = descriptor.cln as grpc.GrpcObject
   const options = {
     'grpc.ssl_target_name_override': 'localhost',
   }
-  const uri = cln_uri
-  //@ts-ignore
-  let lightningClient = await new cln.Node(uri, credentials, options)
+  const Node = cln.Node as typeof grpc.Client
+  const lightningClient = new Node(clnUri, credentials, options)
   return lightningClient
 }
 // amount_msat: { value: 100000 }, label: "invoice 1"
